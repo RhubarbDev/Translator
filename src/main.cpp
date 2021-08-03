@@ -7,22 +7,26 @@ using namespace std;
 void readlines();
 
 static string path;
+static string outputpath;
 
 enum class Types
 {
 	Comment,
-	Variable
+	Variable,
+	Output
 };
 
 map<string, Types> mapStringToTypes = {
 	{"#", Types::Comment},
-	{"VAR", Types::Variable}
+	{"VAR", Types::Variable},
+	{"OUTPUT", Types::Output}
 
 };
 
 map<Types, string> mapTypesToString = {
 	{Types::Comment, "#"},
-	{Types::Variable, "VAR"}
+	{Types::Variable, "VAR"},
+	{Types::Output, "OUTPUT"}
 };
 
 
@@ -49,8 +53,20 @@ int main(int argc, char *argv[])
 	exit(0);	
 }
 
-void writelines(string line){
-
+void writelines(vector<string> lines){
+	// TODO: get path of output folder then write line
+	if (outputpath != ""){ 
+		ofstream pythonfile;
+		pythonfile.open(outputpath, ios_base::app);
+		for (string line : lines){
+			pythonfile << line << endl;
+		}
+		pythonfile.close();
+	}else{
+		cout << "Please pick an output path:" << endl;
+		cin >> outputpath;
+		writelines(lines);
+	}
 }
 
 string tokenizer(string s, int i){
@@ -64,9 +80,9 @@ string tokenizer(string s, int i){
 	return str[i];
 }
 
-void translate(string line){
+string translate(string line){
 	string firstword = tokenizer(line, 0);
-	string splitline = line.substr(line.find_first_of(firstword) + firstword.length());
+	string splitline = line.substr(firstword.length() + 1);
 	Types keyword;
 	try{
 		keyword = mapStringToTypes[firstword];
@@ -76,20 +92,21 @@ void translate(string line){
 	string translated;
 	switch (keyword){
 		case Types::Comment:
-		  translated = "#" + splitline;  
+		  translated = "# " + splitline;  
 		  break;
 		case Types::Variable:
 		  translated = tokenizer(splitline, 0);
-		  splitline = splitline.substr(splitline.find_first_of(translated) + firstword.length());
+		  splitline = splitline.substr(tokenizer(splitline, 0).length() + 1);
 		  translated = translated + " = " + splitline;
 		  break;
+        case Types::Output:
+		  translated = ("print(f\"" + splitline + "\")");
+		  break;
 		default:
-		  // ! if its default just comment it?
+		  translated = "# " + splitline + " (default)";
 		  break;
 	}
-	cout << translated << endl;
-	// TODO: pass to translated func
-
+	return translated;
 }
 
 void readlines(){
@@ -101,14 +118,16 @@ void readlines(){
 
         // TODO: check that path is valid
 
-        translate("# Translator by RhubarbDev - https://github.com/RhubarbJamm");
+		vector<string> translatedlines;
+
+        translatedlines.push_back("# Translator by RhubarbDev - https://github.com/RhubarbJamm");
 		while (getline(file, line)){
-			translate(line);
+			translatedlines.push_back(translate(line));
 		}
+		writelines(translatedlines);
 	}
 	catch (exception){
 		cout << "ERROR :-(";
 		exit(0);
 	}
-
 }
