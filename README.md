@@ -15,6 +15,7 @@ INPUT y this is an input
 OUTPUT {y}  
 
 Will translate to:  
+  
 x = "hello"  
 print(f"{x}world")  
 y = input("this is an input")  
