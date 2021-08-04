@@ -13,20 +13,23 @@ enum class Types
 {
 	Comment,
 	Variable,
-	Output
+	Output,
+	Input
 };
 
 map<string, Types> mapStringToTypes = {
 	{"#", Types::Comment},
 	{"VAR", Types::Variable},
-	{"OUTPUT", Types::Output}
+	{"OUTPUT", Types::Output},
+	{"INPUT", Types::Input}
 
 };
 
 map<Types, string> mapTypesToString = {
 	{Types::Comment, "#"},
 	{Types::Variable, "VAR"},
-	{Types::Output, "OUTPUT"}
+	{Types::Output, "OUTPUT"},
+	{Types::Input, "INPUT"}
 };
 
 
@@ -102,6 +105,11 @@ string translate(string line){
         case Types::Output:
 		  translated = ("print(f\"" + splitline + "\")");
 		  break;
+		case Types::Input:
+		  translated = tokenizer(splitline, 0);
+		  splitline = splitline.substr(tokenizer(splitline, 0).length() + 1);
+		  translated = translated + (" = input(\"" + splitline + "\")");
+		  break;
 		default:
 		  translated = "# " + splitline + " (default)";
 		  break;
@@ -122,6 +130,7 @@ void readlines(){
 
         translatedlines.push_back("# Translator by RhubarbDev - https://github.com/RhubarbJamm");
 		while (getline(file, line)){
+			if (line == ""){ continue; }
 			translatedlines.push_back(translate(line));
 		}
 		writelines(translatedlines);
