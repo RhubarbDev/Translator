@@ -9,7 +9,7 @@ Currently it can translate 4 things:
 
 for example:
 
-VAR x = "hello"
-OUTPUT {x}world
-INPUT y this is an input
-OUTPUT {y}
+VAR x = "hello"  
+OUTPUT {x}world  
+INPUT y this is an input  
+OUTPUT {y}  
