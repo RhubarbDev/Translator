@@ -14,14 +14,20 @@ enum class Types
 	Comment,
 	Variable,
 	Output,
-	Input
+	Input,
+	If,
+	Else,
+	Elif
 };
 
 map<string, Types> mapStringToTypes = {
 	{"#", Types::Comment},
 	{"VAR", Types::Variable},
 	{"OUTPUT", Types::Output},
-	{"INPUT", Types::Input}
+	{"INPUT", Types::Input},
+	{"IF", Types::If},
+	{"ELSE", Types::Else},
+	{"ELIF", Types::Elif}
 
 };
 
@@ -29,7 +35,10 @@ map<Types, string> mapTypesToString = {
 	{Types::Comment, "#"},
 	{Types::Variable, "VAR"},
 	{Types::Output, "OUTPUT"},
-	{Types::Input, "INPUT"}
+	{Types::Input, "INPUT"},
+	{Types::If, "IF"},
+	{Types::Else, "ELSE"},
+	{Types::Elif, "ELIF"}
 };
 
 
@@ -57,7 +66,6 @@ int main(int argc, char *argv[])
 }
 
 void writelines(vector<string> lines){
-	// TODO: get path of output folder then write line
 	if (outputpath != ""){ 
 		ofstream pythonfile;
 		pythonfile.open(outputpath, ios_base::app);
@@ -84,8 +92,15 @@ string tokenizer(string s, int i){
 }
 
 string translate(string line){
+	int indent = 0;
 	string firstword = tokenizer(line, 0);
-	string splitline = line.substr(firstword.length() + 1);
+	for (int i = 0; i < firstword.length(); i++){
+	    if (firstword.front() == '!'){
+		indent++;
+		firstword = firstword.erase(0, 1);
+	    }
+	}
+	string splitline = line.substr(firstword.length() + 1 + indent);
 	Types keyword;
 	try{
 		keyword = mapStringToTypes[firstword];
@@ -110,9 +125,21 @@ string translate(string line){
 		  splitline = splitline.substr(tokenizer(splitline, 0).length() + 1);
 		  translated = translated + (" = input(\"" + splitline + "\")");
 		  break;
+		case Types::If:
+		  translated = "if " + splitline + ":";
+		  break;
+		case Types::Else:
+		  translated = "else:";
+		  break;
+		case Types::Elif:
+		  translated = "elif " + splitline + ":";
+		  break;
 		default:
 		  translated = "# " + splitline + " (default)";
 		  break;
+	}
+	for (int i = 0; i < indent; i++){
+		translated = "    " + translated;
 	}
 	return translated;
 }
