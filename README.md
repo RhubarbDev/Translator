@@ -6,18 +6,23 @@ Currently it can translate 4 things:
 - Variables
 - Inputs
 - Outputs
+- If
+- Else
+- Elif
 
 for example:
 
 VAR x = "hello"  
 OUTPUT {x}world  
-INPUT y this is an input  
-OUTPUT {y}  
+INPUT y pick a number:  
+IF y == 5
+!OUTPUT you picked the number 5!  
 
 Will translate to:  
   
 x = "hello"  
 print(f"{x}world")  
-y = input("this is an input")  
-print(f"{y}")  
+y = input("pick a number:")
+if y == 5:
+    print(f"you picked the number 5!")
 
