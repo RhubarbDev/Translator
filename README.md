@@ -15,7 +15,7 @@ for example:
 VAR x = "hello"  
 OUTPUT {x}world  
 INPUT y pick a number:  
-IF y == 5
+IF y == 5  
 !OUTPUT you picked the number 5!  
 
 Will translate to:  
